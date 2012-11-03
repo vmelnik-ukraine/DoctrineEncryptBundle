@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+        
+    <services>
+        <!-- Security service(subscriber) for encrypt/decrypt encryptable entities -->    
+        <service id="vmelnik_doctrine_encrypt.orm_subscriber" class="VMelnik\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber">
+            <argument>%vmelnik_doctrine_encrypt.encryptor_class_name%</argument>
+            <argument>%vmelnik_doctrine_encrypt.secret_key%</argument>
+            <tag name="doctrine.event_subscriber" />
+        </service>
+    </services>
+</container>
