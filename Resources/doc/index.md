@@ -5,4 +5,4 @@ on PHP side, not DB, because Doctrine 2 haven't needed DQL hooks
 
 The following documents are available:
 
-* [Configuration reference](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/Resources/doc/configuration_reference.md)
+* [Configuration reference](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/configuration_reference.md)

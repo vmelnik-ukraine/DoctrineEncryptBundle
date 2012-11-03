@@ -6,7 +6,7 @@ Bundle allows to create doctrine entities with fields that will be protected by 
 
 The bulk of the documentation is stored in the `Resources/doc/index.md` file in this bundle
 
-[Read the Documentation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/Resources/doc/index.md)
+[Read the Documentation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/index.md)
 
 ###License
 
