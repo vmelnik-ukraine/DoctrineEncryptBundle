@@ -1,0 +1,14 @@
+{
+    "name": "vmelnik/doctrine-encrypt-bundle",
+    "description": "Symfony 2 bundle which allows to encrypt data in database with some encrypt algorithm",
+    "require": {
+        "symfony/framework-bundle": "dev-master"
+    },
+    "minimum-stability": "stable",
+    "authors": [
+        {
+            "name": "Victor Melnik",
+            "email": "melnikvictorl@gmail.com"
+        }
+    ]
+}
