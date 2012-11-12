@@ -1,10 +1,11 @@
-#VMelnikDoctrineEncryptBundle Example Of Usage
+#Example Of Usage
 
-Lets imagine that you storing some private data in your database and don't want to somebody can see it 
-event if he has raw database on the hands in some dirty way. With this bundle this task can be 
-easily made and you even don't see these processes because bundle uses some doctrine life cycle 
-events and in database information will be encoded and your entities in program will be clear as 
-always and all these things will be happen automatically.
+Lets imagine that we are storing some private data in our database and we don't want 
+to somebody can see it even if he will get raw database on his hands in some dirty way. 
+With this bundle this task can be easily made and we even don't see these processes 
+because bundle uses some doctrine life cycle events. In database information will 
+be encoded. In the same time entities in program will be clear as always and all 
+these things will be happen automatically.
 
 ## Simple example
 
@@ -85,7 +86,7 @@ class LoadUserData implements FixtureInterface
         $user = new UserV();
         $user->setFirstName('Victor');
         $user->setLastName('Melnik');
-        $user->setTotalMoney('1000000000000');
+        $user->setTotalMoney(20);
         $user->setCreditCardNumber('1234567890');
 
         $manager->persist($user);
@@ -134,17 +135,20 @@ class DemoController extends Controller
 </div> 
 ```
 
-When we follow link <site>/show-user/1 we will see that all user's information is decoded 
-like in fixture, but in the same time information in database will something like this:
+When we follow link /show-user/1 we will see that user's information is decoded and 
+in the same time information in database will be encoded. In database we'll have 
+something like this:
 
-+----+----------------------------------------------+------------+-----------+----------------------------------------------+
-| id | total_money                                  | first_name | last_name | credit_card_number                           |
-+----+----------------------------------------------+------------+-----------+----------------------------------------------+
-|  1 | dx+taMIxyUdI3OTlqkjDBKRWP9Qr28PCaCCYxwbjEQU= | Victor     | Melnik    | 1Y+Yzq6/dDXvtnYHhTyadWfIm6xhGLxuKL2oSuxuzL4= |
-+----+----------------------------------------------+------------+-----------+----------------------------------------------+
+```
+id                  | 1
+total_money         | dx+taMIxyUdI3OTlqkjDBKRWP9Qr28PCaCCYxwbjEQU=
+first_name          | Victor
+last_name           | Melnik
+credit_card_number  | 1Y+Yzq6/dDXvtnYHhTyadWfIm6xhGLxuKL2oSuxuzL4=
+```
 
-So your information is encoded and all okay.
+So our information is encoded and all okay.
 
 ###Requirements
 
-You need `DoctrineFixturesBundle`, `php-mcrypt` extension
+You need `DoctrineFixturesBundle` and `php-mcrypt` extension for this example
