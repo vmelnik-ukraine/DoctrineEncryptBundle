@@ -1,10 +1,16 @@
 {
     "name": "vmelnik/doctrine-encrypt-bundle",
+    "type": "library",
+    "keywords": ["doctrine", "aes256", "encrypt", "decrypt"],
+    "license": "MIT",
     "description": "Symfony 2 bundle which allows to encrypt data in database with some encrypt algorithm",
     "require": {
-        "symfony/framework-bundle": "dev-master"
+        "php": ">=5.3.2",
+        "symfony/framework-bundle": ">=2.0"
     },
-    "minimum-stability": "stable",
+    "autoload": {
+        "psr-0": { "VMelnik\\DoctrineEncryptBundle": "" }
+    },
     "authors": [
         {
             "name": "Victor Melnik",
