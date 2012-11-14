@@ -11,6 +11,7 @@
     "autoload": {
         "psr-0": { "VMelnik\\DoctrineEncryptBundle": "" }
     },
+    "target-dir": "VMelnik/DoctrineEncryptBundle",
     "authors": [
         {
             "name": "Victor Melnik",
