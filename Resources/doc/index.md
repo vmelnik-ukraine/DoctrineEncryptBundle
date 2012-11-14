@@ -6,5 +6,5 @@ on PHP side, not DB, because Doctrine 2 haven't needed DQL hooks
 The following documents are available:
 
 * [Configuration reference](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/configuration_reference.md)
-* Installing (coming soon with composer)
+* [Installation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/installation.md)
 * [Example of usage](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/example_of_usage.md)
