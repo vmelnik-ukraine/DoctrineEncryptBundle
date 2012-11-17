@@ -9,9 +9,8 @@ these things will be happen automatically.
 
 ## Simple example
 
-For example, we have some user entity with two fields which we want to encode in database. This entity 
-must implement `VMelnik\DoctrineEncryptBundle\Encryptors\EncryptableInterface` interface and has method 
-`getEncryptedFields` wich will return array with fields names needed in encode\decode operations.
+For example, we have some user entity with two fields which we want to encode in database.
+We must import annotation `@Encrypted` first and then mark fields with it.
 
 ###Doctrine Entity
 
@@ -19,7 +18,9 @@ must implement `VMelnik\DoctrineEncryptBundle\Encryptors\EncryptableInterface` i
 namespace Acme\DemoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptableInterface;
+
+// importing @Encrypted annotation
+use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
 
 /**
  * @ORM\Entity
@@ -37,6 +38,7 @@ class UserV implements EncryptableInterface {
     
     /**
      * @ORM\Column(type="text", name="total_money")
+     * @Encrypted
      * @var int
      */
     private $totalMoney;
@@ -55,17 +57,13 @@ class UserV implements EncryptableInterface {
     
     /**
      * @ORM\Column(type="text", name="credit_card_number")
+     * @Encrypted
      * @var string
      */
     private $creditCardNumber;
     
     //common getters/setters here...
 
-    // we implement method of EncryptableInterface and return two encoded fields names
-    public function getEncryptedFields() {
-        return array('totalMoney', 'creditCardNumber');
-    }
-    
 }
 ```
 
@@ -135,9 +133,9 @@ class DemoController extends Controller
 </div> 
 ```
 
-When we follow link /show-user/1 we will see that user's information is decoded and 
-in the same time information in database will be encoded. In database we'll have 
-something like this:
+When we follow link /show-user/{x}, where x - id of our user in DB, we will see that 
+user's information is decoded and in the same time information in database will 
+be encoded. In database we'll have something like this:
 
 ```
 id                  | 1

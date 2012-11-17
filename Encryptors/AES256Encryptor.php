@@ -4,6 +4,8 @@ namespace VMelnik\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Class for AES256 encryption
+ * 
+ * @author Victor Melnik <melnikvictorl@gmail.com>
  */
 class AES256Encryptor implements EncryptorInterface {
 

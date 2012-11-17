@@ -1,7 +1,7 @@
 #DoctrineEncryptBundle 
 
 This bundle is responsible for encryption/decryption of the data in DB. All encryption/decryption work
-on PHP side, not DB, because Doctrine 2 haven't needed DQL hooks
+on PHP side
 
 The following documents are available:
 

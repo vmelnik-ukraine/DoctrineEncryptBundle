@@ -3,7 +3,9 @@
 namespace VMelnik\DoctrineEncryptBundle\Encryptors;
 
 /**
- * Encryptor interface. Provides methods for encryptors
+ * Encryptor interface for encryptors
+ * 
+ * @author Victor Melnik <melnikvictorl@gmail.com>
  */
 interface EncryptorInterface {
 
