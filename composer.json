@@ -6,7 +6,8 @@
     "description": "Symfony 2 bundle which allows to encrypt data in database with some encrypt algorithm",
     "require": {
         "php": ">=5.3.2",
-        "symfony/framework-bundle": ">=2.0"
+        "symfony/framework-bundle": ">=2.0",
+        "ext-mcrypt": "*"
     },
     "autoload": {
         "psr-0": { "VMelnik\\DoctrineEncryptBundle": "" }
