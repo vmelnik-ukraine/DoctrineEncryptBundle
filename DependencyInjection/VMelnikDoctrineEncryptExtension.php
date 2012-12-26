@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * Initializetion of bundle.
- * 
+ *
  * This is the class that loads and manages your bundle configuration
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
@@ -45,4 +45,8 @@ class VMelnikDoctrineEncryptExtension extends Extension {
         $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
     }
 
+    public function getAlias()
+    {
+        return 'vmelnik_doctrine_encrypt';
+    }
 }
