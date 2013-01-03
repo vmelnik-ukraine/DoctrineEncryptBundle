@@ -6,6 +6,7 @@ use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\Common\Annotations\Reader;
+use \Doctrine\ORM\EntityManager;
 use \ReflectionClass;
 
 /**
@@ -34,6 +35,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @var Doctrine\Common\Annotations\Reader
      */
     private $annReader;
+    
+    /**
+     * Registr to avoid multi decode operations for one entity
+     * @var array
+     */
+    private $decodedRegistry = array();
 
     /**
      * Initialization of subscriber
@@ -62,7 +69,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     public function postLoad(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
-        $this->processFields($entity, false);
+        if(!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
+            if($this->processFields($entity, false)) {
+                $this->addToDecodedRegistry($entity, $args->getEntityManager());
+            }
+        }
+        
     }
 
     /**
@@ -75,6 +87,19 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             Events::postLoad,
         );
     }
+    
+    /**
+     * Capitalize string
+     * @param string $word
+     * @return string
+     */
+    public static function capitalize($word) {
+        if(is_array($word)) {
+            $word = $word[0];
+        }
+        
+        return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $word)));
+    }
 
     /**
      * Process (encrypt/decrypt) entities fields
@@ -85,13 +110,16 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
         $reflectionClass = new ReflectionClass($entity);
         $properties = $reflectionClass->getProperties();
+        $withAnnotation = false;
         foreach ($properties as $refProperty) {
             if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+                $withAnnotation = true;
+                // we have annotation and if it decrypt operation, we must avoid duble decryption
                 $propName = $refProperty->getName();
                 if ($refProperty->isPublic()) {
                     $entity->$propName = $this->encryptor->$encryptorMethod($refProperty->getValue());
                 } else {
-                    $methodName = str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $propName)));
+                    $methodName = self::capitalize($propName);
                     if ($reflectionClass->hasMethod($getter = 'get' . $methodName) && $reflectionClass->hasMethod($setter = 'set' . $methodName)) {
                         $currentPropValue = $this->encryptor->$encryptorMethod($entity->$getter());
                         $entity->$setter($currentPropValue);
@@ -101,6 +129,8 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
                 }
             }
         }
+        
+        return $withAnnotation;
     }
 
     /**
@@ -118,5 +148,32 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
         }
     }
+    
+    /**
+     * Check if we have entity in decoded registry
+     * @param Object $entity Some doctrine entity
+     * @param \Doctrine\ORM\EntityManager $em
+     * @return boolean
+     */
+    private function hasInDecodedRegistry($entity, EntityManager $em) {
+        $className = get_class($entity);
+        $metadata = $em->getClassMetadata($className);
+        $getter = 'get' . self::capitalize($metadata->getIdentifier());
+        
+        return isset($this->decodedRegistry[$className][$entity->$getter()]);
+    }
+    
+    /**
+     * Adds entity to decoded registry
+     * @param object $entity Some doctrine entity
+     * @param \Doctrine\ORM\EntityManager $em
+     */
+    private function addToDecodedRegistry(EntityManager $entity, $em) {
+        $className = get_class($entity);
+        $metadata = $em->getClassMetadata($className);
+        $getter = 'get' . self::capitalize($metadata->getIdentifier());
+        $this->decodedRegistry[$className][$entity->$getter()] = true;
+    }
+    
 
 }
