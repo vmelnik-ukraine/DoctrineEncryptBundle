@@ -168,7 +168,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param object $entity Some doctrine entity
      * @param \Doctrine\ORM\EntityManager $em
      */
-    private function addToDecodedRegistry(EntityManager $entity, $em) {
+    private function addToDecodedRegistry($entity, EntityManager $em) {
         $className = get_class($entity);
         $metadata = $em->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
