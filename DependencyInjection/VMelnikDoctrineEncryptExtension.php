@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- * Initializetion of bundle.
+ * Initialization of bundle.
  *
  * This is the class that loads and manages your bundle configuration
  *
