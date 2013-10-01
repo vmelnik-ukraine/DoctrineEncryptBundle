@@ -11,6 +11,6 @@ vmelnik_doctrine_encrypt:
 #  If you want, you can use your own Encryptor. Encryptor must implements EncryptorInterface interface
 #  Default: VMelnik\DoctrineEncryptBundle\Encryptors\AES256Encryptor
     encryptor_class:      ~ 
-#  Now it's only one db driver is supported - orm
+#  ORM and MongoDB are supported using "orm" or "odm" respectively.
     db_driver:            orm 
 ```

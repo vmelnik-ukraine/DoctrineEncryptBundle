@@ -20,7 +20,7 @@ class Configuration implements ConfigurationInterface {
     public function getConfigTreeBuilder() {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('vmelnik_doctrine_encrypt');
-        $supportedDrivers = array('orm');
+        $supportedDrivers = array('orm', 'odm');
         $supportedEncryptors = array('aes256');
 
         // Grammar of config tree
