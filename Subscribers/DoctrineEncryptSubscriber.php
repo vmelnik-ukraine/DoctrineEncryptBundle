@@ -9,7 +9,7 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use \Doctrine\ORM\EntityManager;
 use \ReflectionClass;
-use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorServiceInterface;
+use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
@@ -52,10 +52,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param EncryptorServiceInterface|NULL $service (Optional)  An EncryptorServiceInterface.  
      * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorServiceInterface $service = NULL) {
+    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
         $this->annReader = $annReader;
-        if ($service instanceof EncryptorServiceInterface) {
-            $service->setSecretKey($secretKey);
+        if ($service instanceof EncryptorInterface) {
             $this->encryptor = $service;
         } else {
             $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
