@@ -2,19 +2,22 @@
 
 namespace VMelnik\DoctrineEncryptBundle\Subscribers;
 
-use Doctrine\ORM\Events;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Annotations\Reader;
-use \Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
 use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
  */
+<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
 class DoctrineEncryptSubscriber implements EventSubscriber {
+=======
+abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
+>>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
     /**
      * Encryptor interface namespace 
      */
@@ -66,10 +69,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * which have @Encrypted annotation
      * @param LifecycleEventArgs $args 
      */
-    public function prePersist(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
-        $this->processFields($entity);
-    }
+    abstract public function prePersist(LifecycleEventArgs $args);
 
     /**
      * Listen a preUpdate lifecycle event. Checking and encrypt entities fields
@@ -77,6 +77,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
+<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
     public function preUpdate(PreUpdateEventArgs $args) {
         $reflectionClass = new ReflectionClass($args->getEntity());
         $properties = $reflectionClass->getProperties();
@@ -87,12 +88,16 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             }
         }
     }
+=======
+    abstract public function preUpdate(PreUpdateEventArgs $args);
+>>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
 
     /**
      * Listen a postLoad lifecycle event. Checking and decrypt entities
      * which have @Encrypted annotations
      * @param LifecycleEventArgs $args 
      */
+<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
     public function postLoad(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
         if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
@@ -101,11 +106,15 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             }
         }
     }
+=======
+    abstract public function postLoad(LifecycleEventArgs $args);
+>>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
 
     /**
      * Realization of EventSubscriber interface method.
      * @return Array Return all events which this subscriber is listening
      */
+<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
     public function getSubscribedEvents() {
         return array(
             Events::prePersist,
@@ -113,6 +122,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             Events::postLoad,
         );
     }
+=======
+    abstract public function getSubscribedEvents();
+>>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
 
     /**
      * Capitalize string
@@ -132,7 +144,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param Obj $entity Some doctrine entity
      * @param Boolean $isEncryptOperation If true - encrypt, false - decrypt entity 
      */
-    private function processFields($entity, $isEncryptOperation = true) {
+    protected function processFields($entity, $isEncryptOperation = true) {
         $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
         $reflectionClass = new ReflectionClass($entity);
         $properties = $reflectionClass->getProperties();
@@ -178,12 +190,12 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     /**
      * Check if we have entity in decoded registry
      * @param Object $entity Some doctrine entity
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param Doctrine\Common\Persistence\ObjectManager $em
      * @return boolean
      */
-    private function hasInDecodedRegistry($entity, EntityManager $em) {
+    protected function hasInDecodedRegistry($entity, ObjectManager $om) {
         $className = get_class($entity);
-        $metadata = $em->getClassMetadata($className);
+        $metadata = $om->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
 
         return isset($this->decodedRegistry[$className][$entity->$getter()]);
@@ -192,11 +204,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     /**
      * Adds entity to decoded registry
      * @param object $entity Some doctrine entity
-     * @param \Doctrine\ORM\EntityManager $em
+     * @param Doctrine\Common\Persistence\ObjectManager $em
      */
-    private function addToDecodedRegistry($entity, EntityManager $em) {
+    protected function addToDecodedRegistry($entity, ObjectManager $om) {
         $className = get_class($entity);
-        $metadata = $em->getClassMetadata($className);
+        $metadata = $om->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
         $this->decodedRegistry[$className][$entity->$getter()] = true;
     }
