@@ -3,8 +3,6 @@
 namespace VMelnik\DoctrineEncryptBundle\Subscribers;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
@@ -16,7 +14,6 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
     /**
      * Encryptor interface namespace 
      */
-
     const ENCRYPTOR_INTERFACE_NS = 'VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
 
     /**
@@ -57,7 +54,7 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * which have @Encrypted annotation
      * @param LifecycleEventArgs $args 
      */
-    abstract public function prePersist(LifecycleEventArgs $args);
+    abstract public function prePersist($args);
 
     /**
      * Listen a preUpdate lifecycle event. Checking and encrypt entities fields
@@ -65,14 +62,15 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
-    abstract public function preUpdate(PreUpdateEventArgs $args);
+
+    abstract public function preUpdate($args);
 
     /**
      * Listen a postLoad lifecycle event. Checking and decrypt entities
      * which have @Encrypted annotations
      * @param LifecycleEventArgs $args 
      */
-    abstract public function postLoad(LifecycleEventArgs $args);
+    abstract public function postLoad($args);
 
     /**
      * Realization of EventSubscriber interface method.

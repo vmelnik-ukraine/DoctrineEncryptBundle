@@ -32,7 +32,10 @@ class ORMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * which have @Encrypted annotation
      * @param LifecycleEventArgs $args 
      */
-    public function prePersist(LifecycleEventArgs $args) {
+    public function prePersist($args) {
+        if (!$args instanceof LifecycleEventArgs)
+            throw new \InvalidArgumentException('Invalid argument passed.');
+
         $entity = $args->getEntity();
         $this->processFields($entity);
     }
@@ -43,7 +46,10 @@ class ORMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
-    public function preUpdate(PreUpdateEventArgs $args) {
+    public function preUpdate($args) {
+        if (!$args instanceof PreUpdateEventArgs)
+            throw new \InvalidArgumentException('Invalid argument passed.');
+
         $reflectionClass = new ReflectionClass($args->getEntity());
         $properties = $reflectionClass->getProperties();
         foreach ($properties as $refProperty) {
@@ -59,7 +65,10 @@ class ORMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * which have @Encrypted annotations
      * @param LifecycleEventArgs $args 
      */
-    public function postLoad(LifecycleEventArgs $args) {
+    public function postLoad($args) {
+        if (!$args instanceof LifecycleEventArgs)
+            throw new \InvalidArgumentException('Invalid argument passed.');
+
         $entity = $args->getEntity();
         if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
             if ($this->processFields($entity, false)) {
