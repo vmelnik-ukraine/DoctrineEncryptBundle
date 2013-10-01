@@ -3,8 +3,6 @@
 namespace VMelnik\DoctrineEncryptBundle\Subscribers;
 
 use Doctrine\Common\EventSubscriber;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
@@ -13,15 +11,11 @@ use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
  */
-<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
-class DoctrineEncryptSubscriber implements EventSubscriber {
-=======
 abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
->>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
+
     /**
      * Encryptor interface namespace 
      */
-
     const ENCRYPTOR_INTERFACE_NS = 'VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
 
     /**
@@ -69,7 +63,7 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * which have @Encrypted annotation
      * @param LifecycleEventArgs $args 
      */
-    abstract public function prePersist(LifecycleEventArgs $args);
+    abstract public function prePersist($args);
 
     /**
      * Listen a preUpdate lifecycle event. Checking and encrypt entities fields
@@ -77,54 +71,22 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
-<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
-    public function preUpdate(PreUpdateEventArgs $args) {
-        $reflectionClass = new ReflectionClass($args->getEntity());
-        $properties = $reflectionClass->getProperties();
-        foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
-                $propName = $refProperty->getName();
-                $args->setNewValue($propName, $this->encryptor->encrypt($args->getNewValue($propName)));
-            }
-        }
-    }
-=======
-    abstract public function preUpdate(PreUpdateEventArgs $args);
->>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
+
+
+    abstract public function preUpdate($args);
 
     /**
      * Listen a postLoad lifecycle event. Checking and decrypt entities
      * which have @Encrypted annotations
      * @param LifecycleEventArgs $args 
      */
-<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
-    public function postLoad(LifecycleEventArgs $args) {
-        $entity = $args->getEntity();
-        if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
-            if ($this->processFields($entity, false)) {
-                $this->addToDecodedRegistry($entity, $args->getEntityManager());
-            }
-        }
-    }
-=======
-    abstract public function postLoad(LifecycleEventArgs $args);
->>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
+    abstract public function postLoad($args);
 
     /**
      * Realization of EventSubscriber interface method.
      * @return Array Return all events which this subscriber is listening
      */
-<<<<<<< HEAD:Subscribers/DoctrineEncryptSubscriber.php
-    public function getSubscribedEvents() {
-        return array(
-            Events::prePersist,
-            Events::preUpdate,
-            Events::postLoad,
-        );
-    }
-=======
     abstract public function getSubscribedEvents();
->>>>>>> #4:Subscribers/AbstractDoctrineEncryptSubscriber.php
 
     /**
      * Capitalize string
