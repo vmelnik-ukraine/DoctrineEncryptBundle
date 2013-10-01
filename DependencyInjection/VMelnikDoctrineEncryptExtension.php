@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorServiceInterface;
 
 /**
  * Initialization of bundle.
@@ -38,15 +39,27 @@ class VMelnikDoctrineEncryptExtension extends Extension {
         } else {
             $encryptorFullName = $supportedEncryptorClasses[$config['encryptor']];
         }
+
+        $encryptorService = NULL;
+        if (!empty($config['encryptor_service'])) {
+            if (!$container->has($config['encryptor_service']))
+                throw new \RuntimeException('Encryptor service must be a defined service.');
+            $service = $container->get($config['encryptor_service']);
+            if (!$service instanceof EncryptorServiceInterface)
+                throw new \RuntimeException('Encryptor service must be an instance of "EncryptorServiceInterface".');
+            $encryptorFullName = '';
+            $encryptorService = $service;
+        }
         $container->setParameter('vmelnik_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
         $container->setParameter('vmelnik_doctrine_encrypt.secret_key', $config['secret_key']);
+        $container->setParameter('vmelnik_doctrine_encrypt.encrypter_service', $encryptorService);
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
     }
 
-    public function getAlias()
-    {
+    public function getAlias() {
         return 'vmelnik_doctrine_encrypt';
     }
+
 }
