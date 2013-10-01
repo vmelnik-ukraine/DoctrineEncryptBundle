@@ -43,19 +43,13 @@ class VMelnikDoctrineEncryptExtension extends Extension {
 
         $container->setParameter('vmelnik_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
         $container->setParameter('vmelnik_doctrine_encrypt.secret_key', $config['secret_key']);
-        
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
-
-        // Check that the definition for the subscriber is setup
-        $definition = $this->getDefinition($container, 'vmelnik_doctrine_encrypt.subscriber');
 
         if (!empty($config['encryptor_service'])) {
-            $encryptorDefinition = $this->getDefinition($container, $config['encryptor_service']);
-            $encryptorDefinition->setArguments(array($config['secret_key']));
-            $definition->replaceArgument(1, '');
-            $definition->addArgument(new Reference($config['encryptor_service']));
+            $container->setParameter('vmelnik_doctrine_encrypt.encryptor_service', $config['encryptor_service']);
         }
+
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+        $loader->load(sprintf('%s.xml', $services[$config['db_driver']]));
     }
 
     /**
