@@ -9,17 +9,18 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Common\Annotations\Reader;
 use \Doctrine\ORM\EntityManager;
 use \ReflectionClass;
+use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
  */
 class DoctrineEncryptSubscriber implements EventSubscriber {
-    
     /**
      * Encryptor interface namespace 
      */
+
     const ENCRYPTOR_INTERFACE_NS = 'VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
-    
+
     /**
      * Encrypted annotation full name
      */
@@ -36,7 +37,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @var Doctrine\Common\Annotations\Reader
      */
     private $annReader;
-    
+
     /**
      * Registr to avoid multi decode operations for one entity
      * @var array
@@ -45,12 +46,19 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
 
     /**
      * Initialization of subscriber
-     * @param string $encryptorClass
-     * @param string $secretKey
+     * @param string $encryptorClass  The encryptor class.  This can be empty if 
+     * a service is being provided.
+     * @param string $secretKey The secret key. 
+     * @param EncryptorServiceInterface|NULL $service (Optional)  An EncryptorServiceInterface.  
+     * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, $encryptorClass, $secretKey) {
+    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
         $this->annReader = $annReader;
-        $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
+        if ($service instanceof EncryptorInterface) {
+            $this->encryptor = $service;
+        } else {
+            $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
+        }
     }
 
     /**
@@ -79,7 +87,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             }
         }
     }
-    
+
     /**
      * Listen a postLoad lifecycle event. Checking and decrypt entities
      * which have @Encrypted annotations
@@ -87,12 +95,11 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     public function postLoad(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
-        if(!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
-            if($this->processFields($entity, false)) {
+        if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
+            if ($this->processFields($entity, false)) {
                 $this->addToDecodedRegistry($entity, $args->getEntityManager());
             }
         }
-        
     }
 
     /**
@@ -106,17 +113,17 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             Events::postLoad,
         );
     }
-    
+
     /**
      * Capitalize string
      * @param string $word
      * @return string
      */
     public static function capitalize($word) {
-        if(is_array($word)) {
+        if (is_array($word)) {
             $word = $word[0];
         }
-        
+
         return str_replace(' ', '', ucwords(str_replace(array('-', '_'), ' ', $word)));
     }
 
@@ -148,10 +155,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
                 }
             }
         }
-        
+
         return $withAnnotation;
     }
-    
+
     /**
      * Encryptor factory. Checks and create needed encryptor
      * @param string $classFullName Encryptor namespace and name
@@ -167,7 +174,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             throw new \RuntimeException('Encryptor must implements interface EncryptorInterface');
         }
     }
-    
+
     /**
      * Check if we have entity in decoded registry
      * @param Object $entity Some doctrine entity
@@ -178,10 +185,10 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         $className = get_class($entity);
         $metadata = $em->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
-        
+
         return isset($this->decodedRegistry[$className][$entity->$getter()]);
     }
-    
+
     /**
      * Adds entity to decoded registry
      * @param object $entity Some doctrine entity
@@ -193,5 +200,5 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
         $this->decodedRegistry[$className][$entity->$getter()] = true;
     }
-    
+
 }
