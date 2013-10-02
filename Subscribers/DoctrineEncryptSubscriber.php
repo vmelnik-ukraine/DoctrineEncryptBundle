@@ -49,7 +49,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param string $encryptorClass  The encryptor class.  This can be empty if 
      * a service is being provided.
      * @param string $secretKey The secret key. 
-     * @param EncryptorServiceInterface|NULL $service (Optional)  An EncryptorServiceInterface.  
+     * @param EncryptorInterface|NULL $service (Optional)  An EncryptorInterface.
      * This allows for the use of dependency injection for the encrypters.
      */
     public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
