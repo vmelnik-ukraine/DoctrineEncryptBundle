@@ -6,11 +6,13 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
+use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
  */
 abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
+
     /**
      * Encryptor interface namespace 
      */
@@ -41,12 +43,19 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
 
     /**
      * Initialization of subscriber
-     * @param string $encryptorClass
-     * @param string $secretKey
+     * @param string $encryptorClass  The encryptor class.  This can be empty if 
+     * a service is being provided.
+     * @param string $secretKey The secret key. 
+     * @param EncryptorServiceInterface|NULL $service (Optional)  An EncryptorServiceInterface.  
+     * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, $encryptorClass, $secretKey) {
+    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
         $this->annReader = $annReader;
-        $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
+        if ($service instanceof EncryptorInterface) {
+            $this->encryptor = $service;
+        } else {
+            $this->encryptor = $this->encryptorFactory($encryptorClass, $secretKey);
+        }
     }
 
     /**
@@ -62,6 +71,7 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
+
 
     abstract public function preUpdate($args);
 

@@ -41,6 +41,8 @@ class Configuration implements ConfigurationInterface {
                     ->end()
                     ->scalarNode('encryptor_class')
                     ->end()
+                    ->scalarNode('encryptor_service')
+                    ->end()
                     ->scalarNode('db_driver')
                         ->validate()
                             ->ifNotInArray($supportedDrivers)
