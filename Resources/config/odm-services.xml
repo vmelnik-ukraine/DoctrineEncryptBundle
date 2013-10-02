@@ -10,7 +10,7 @@
             <argument type="service" id="annotation_reader" />
             <argument>%vmelnik_doctrine_encrypt.encryptor_class_name%</argument>
             <argument>%vmelnik_doctrine_encrypt.secret_key%</argument>
-            <tag name="doctrine.event_subscriber" />
+            <tag name="doctrine_mongodb.event_subscriber" />
         </service>
         <service id="vmelnik_doctrine_encrypt.subscriber" alias="vmelnik_doctrine_encrypt.odm_subscriber" />
     </services>
