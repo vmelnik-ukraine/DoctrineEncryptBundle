@@ -27,19 +27,19 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * Encryptor
      * @var EncryptorInterface 
      */
-    private $encryptor;
+    protected $encryptor;
 
     /**
      * Annotation reader
      * @var Doctrine\Common\Annotations\Reader
      */
-    private $annReader;
+    protected $annReader;
 
     /**
      * Registr to avoid multi decode operations for one entity
      * @var array
      */
-    private $decodedRegistry = array();
+    protected $decodedRegistry = array();
 
     /**
      * Initialization of subscriber
