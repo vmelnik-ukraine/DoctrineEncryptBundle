@@ -158,7 +158,10 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
     protected function hasInDecodedRegistry($entity, ObjectManager $om) {
         $className = get_class($entity);
         $metadata = $om->getClassMetadata($className);
-        $getter = 'get' . self::capitalize($metadata->getIdentifier());
+        $suffix = self::capitalize($metadata->getIdentifier());
+        if($suffix == '')
+            return FALSE;
+        $getter = 'get' . $suffix;
 
         return isset($this->decodedRegistry[$className][$entity->$getter()]);
     }
