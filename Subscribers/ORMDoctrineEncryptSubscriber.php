@@ -36,8 +36,7 @@ class ORMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
         if (!$args instanceof LifecycleEventArgs)
             throw new \InvalidArgumentException('Invalid argument passed.');
 
-        $entity = $args->getEntity();
-        $this->processFields($entity);
+        $this->processFields($args->getEntity());
     }
 
     /**
@@ -50,14 +49,11 @@ class ORMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
         if (!$args instanceof PreUpdateEventArgs)
             throw new \InvalidArgumentException('Invalid argument passed.');
 
-        $reflectionClass = new ReflectionClass($args->getEntity());
-        $properties = $reflectionClass->getProperties();
-        foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
-                $propName = $refProperty->getName();
-                $args->setNewValue($propName, $this->encryptor->encrypt($args->getNewValue($propName)));
-            }
-        }
+        $entity = $args->getEntity();
+        $this->processFields($entity);
+
+        $om = $args->getEntityManager();
+        $om->getUnitOfWork()->recomputeSingleEntityChangeSet($om->getClassMetadata(get_class($entity)), $entity);
     }
 
     /**

@@ -3,10 +3,12 @@
 namespace VMelnik\DoctrineEncryptBundle\Subscribers;
 
 use VMelnik\DoctrineEncryptBundle\Subscribers\AbstractDoctrineEncryptSubscriber;
+use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;
 use \ReflectionClass;
+use \ReflectionProperty;
 
 /**
  * Description of ODMDoctrineEncryptSubscriber
@@ -33,11 +35,10 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * @param LifecycleEventArgs $args 
      */
     public function prePersist($args) {
-        if(!$args instanceof LifecycleEventArgs)
+        if (!$args instanceof LifecycleEventArgs)
             throw new \InvalidArgumentException('Invalid argument passed.');
-        
-        $document = $args->getDocument();
-        $this->processFields($document);
+
+        $this->processFields($args->getDocument());
     }
 
     /**
@@ -47,17 +48,14 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * @param LifecycleEventArgs $args 
      */
     public function preUpdate($args) {
-        if(!$args instanceof PreUpdateEventArgs)
+        if (!$args instanceof PreUpdateEventArgs)
             throw new \InvalidArgumentException('Invalid argument passed.');
-        
-        $reflectionClass = new ReflectionClass($args->getDocument());
-        $properties = $reflectionClass->getProperties();
-        foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
-                $propName = $refProperty->getName();
-                $args->setNewValue($propName, $this->encryptor->encrypt($args->getNewValue($propName)));
-            }
-        }
+
+        $om = $args->getDocumentManager();
+        $document = $args->getDocument();
+        $this->processFields($document);
+        $om->getUnitOfWork()->recomputeSingleDocumentChangeSet($om->getClassMetadata(get_class($document)), $document);
+
     }
 
     /**
@@ -66,15 +64,15 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
      * @param LifecycleEventArgs $args 
      */
     public function postLoad($args) {
-        if(!$args instanceof LifecycleEventArgs)
+        if (!$args instanceof LifecycleEventArgs)
             throw new \InvalidArgumentException('Invalid argument passed.');
-        
+
         $document = $args->getDocument();
         if (!$this->hasInDecodedRegistry($document, $args->getDocumentManager())) {
             if ($this->processFields($document, false)) {
                 $this->addToDecodedRegistry($document, $args->getDocumentManager());
             }
-        }
+        }        
     }
 
 }
