@@ -112,15 +112,24 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
         $properties = $this->getReflectionProperties($object);
         $withAnnotation = false;
         foreach ($properties as $refProperty) {
-            $annotation = $this->getAnnotation($refProperty);
-            if (NULL !== $annotation) {
-                $withAnnotation = true;
-                $refProperty->setAccessible(TRUE);
-                $refProperty->setValue($object, $this->encryptor->$encryptorMethod($refProperty->getValue($object), $annotation->getDeterministic()));
+            if ($this->processSingleField($object, $refProperty, $encryptorMethod)) {
+                $withAnnotation = TRUE;
             }
         }
-        
         return $withAnnotation;
+    }
+
+    private function processSingleField($object, ReflectionProperty $refProperty, $encryptorMethod) {
+        $annotation = $this->getAnnotation($refProperty);
+        if (NULL === $annotation) {
+            return FALSE;
+        }
+
+        if (!(($annotation->getDecrypt()) && ('encrypt' === $encryptorMethod))) {
+            $refProperty->setAccessible(TRUE);
+            $refProperty->setValue($object, $this->encryptor->$encryptorMethod($refProperty->getValue($object), $annotation->getDeterministic()));
+        }
+        return TRUE;
     }
 
     /**
