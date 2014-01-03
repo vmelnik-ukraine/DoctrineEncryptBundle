@@ -7,6 +7,9 @@ use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
 use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
+use \ReflectionProperty;
+use \Exception;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
@@ -71,8 +74,6 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * restrictions
      * @param LifecycleEventArgs $args 
      */
-
-
     abstract public function preUpdate($args);
 
     /**
@@ -103,33 +104,22 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
 
     /**
      * Process (encrypt/decrypt) entities fields
-     * @param Obj $entity Some doctrine entity
+     * @param Obj $object Some doctrine entity
      * @param Boolean $isEncryptOperation If true - encrypt, false - decrypt entity 
      */
-    protected function processFields($entity, $isEncryptOperation = true) {
+    protected function processFields($object, $isEncryptOperation = true) {
         $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
-        $reflectionClass = new ReflectionClass($entity);
-        $properties = $reflectionClass->getProperties();
+        $properties = $this->getReflectionProperties($object);
         $withAnnotation = false;
         foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+            $annotation = $this->getAnnotation($refProperty);
+            if (NULL !== $annotation) {
                 $withAnnotation = true;
-                // we have annotation and if it decrypt operation, we must avoid duble decryption
-                $propName = $refProperty->getName();
-                if ($refProperty->isPublic()) {
-                    $entity->$propName = $this->encryptor->$encryptorMethod($refProperty->getValue());
-                } else {
-                    $methodName = self::capitalize($propName);
-                    if ($reflectionClass->hasMethod($getter = 'get' . $methodName) && $reflectionClass->hasMethod($setter = 'set' . $methodName)) {
-                        $currentPropValue = $this->encryptor->$encryptorMethod($entity->$getter());
-                        $entity->$setter($currentPropValue);
-                    } else {
-                        throw new \RuntimeException(sprintf("Property %s isn't public and doesn't has getter/setter"));
-                    }
-                }
+                $refProperty->setAccessible(TRUE);
+                $refProperty->setValue($object, $this->encryptor->$encryptorMethod($refProperty->getValue($object), $annotation->getDeterministic()));
             }
         }
-
+        
         return $withAnnotation;
     }
 
@@ -159,7 +149,7 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
         $className = get_class($entity);
         $metadata = $om->getClassMetadata($className);
         $suffix = self::capitalize($metadata->getIdentifier());
-        if($suffix == '')
+        if ($suffix == '')
             return FALSE;
         $getter = 'get' . $suffix;
 
@@ -175,10 +165,29 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
         $className = get_class($entity);
         $metadata = $om->getClassMetadata($className);
         $suffix = self::capitalize($metadata->getIdentifier());
-        if($suffix == '')
+        if ($suffix == '')
             return FALSE;
         $getter = 'get' . $suffix;
         $this->decodedRegistry[$className][$entity->$getter()] = true;
+    }
+
+    /**
+     * 
+     * @param ReflectionProperty $reflectionProperty
+     * @return Encrypted|NULL
+     */
+    protected function getAnnotation(ReflectionProperty $reflectionProperty) {
+        return $this->annReader->getPropertyAnnotation($reflectionProperty, self::ENCRYPTED_ANN_NAME);
+    }
+
+    /**
+     * 
+     * @param mixed $object
+     * @return ReflectionProperty[]
+     */
+    protected function getReflectionProperties($object) {
+        $reflectionClass = new ReflectionClass($object);
+        return $reflectionClass->getProperties();
     }
 
 }

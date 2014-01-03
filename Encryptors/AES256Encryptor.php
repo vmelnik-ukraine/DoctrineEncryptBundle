@@ -26,12 +26,18 @@ class AES256Encryptor implements EncryptorInterface {
     /**
      * Implementation of EncryptorInterface encrypt method
      * @param string $data
+     * @param bool Deterministic
      * @return string
      */
-    public function encrypt($data) {
+    public function encrypt($data, $deterministic) {
+        $ivSize = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        if ($deterministic) {
+            $iv = str_repeat("\0", $ivSize);
+        } else {
+            $iv = mcrypt_create_iv($ivSize, MCRYPT_RAND);
+        }
         return trim(base64_encode(mcrypt_encrypt(
-                                        MCRYPT_RIJNDAEL_256, $this->secretKey, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND
-                                        ))));
+                                MCRYPT_RIJNDAEL_256, $this->secretKey, $data, MCRYPT_MODE_ECB, $iv)));
     }
 
     /**
@@ -39,13 +45,13 @@ class AES256Encryptor implements EncryptorInterface {
      * @param string $data
      * @return string 
      */
-    function decrypt($data) {
+    function decrypt($data, $deterministic) {
         return trim(mcrypt_decrypt(
-                                MCRYPT_RIJNDAEL_256, $this->secretKey, base64_decode($data), MCRYPT_MODE_ECB, mcrypt_create_iv(
-                                        mcrypt_get_iv_size(
-                                                MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB
-                                        ), MCRYPT_RAND
-                                )));
+                        MCRYPT_RIJNDAEL_256, $this->secretKey, base64_decode($data), MCRYPT_MODE_ECB, mcrypt_create_iv(
+                                mcrypt_get_iv_size(
+                                        MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB
+                                ), MCRYPT_RAND
+        )));
     }
 
 }

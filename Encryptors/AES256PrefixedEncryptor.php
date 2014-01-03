@@ -50,11 +50,18 @@ class AES256PrefixedEncryptor implements EncryptorInterface {
     /**
      * Implementation of EncryptorInterface encrypt method
      * @param string $data
+     * @param bool Deterministic
      * @return string
      */
-    public function encrypt($data) {
-        // Return an initialization vector (IV) from a random source
-        $iv = mcrypt_create_iv($this->iv_size, MCRYPT_DEV_URANDOM);
+    public function encrypt($data, $deterministic) {
+
+        if ($deterministic) {
+            // Return an initialization vector (IV) from a random source
+            $iv = str_repeat("\0", $this->iv_size);
+        } else {
+            // Return an initialization vector (IV) from a random source
+            $iv = mcrypt_create_iv($this->iv_size, MCRYPT_DEV_URANDOM);
+        }
 
         // Encrypt plaintext data with given parameters
         $encrypted = mcrypt_encrypt(self::CIPHER, $this->secretKey, $data, self::MODE, $iv);
@@ -71,9 +78,10 @@ class AES256PrefixedEncryptor implements EncryptorInterface {
     /**
      * Implementation of EncryptorInterface decrypt method
      * @param string $data
+     * @param bool Deterministic
      * @return string 
      */
-    public function decrypt($data) {
+    public function decrypt($data, $deterministic) {
         // Return data if not annotated as encrypted
         if (strncmp($this->prefix, $data, strlen($this->prefix)) !== 0)
             return $data;
