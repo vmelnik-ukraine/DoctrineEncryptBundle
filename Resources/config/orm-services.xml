@@ -8,6 +8,7 @@
         <!-- Encryption service(subscriber) for encrypt/decrypt entities properties -->    
         <service id="vmelnik_doctrine_encrypt.orm_subscriber" class="VMelnik\DoctrineEncryptBundle\Subscribers\ORMDoctrineEncryptSubscriber" public="false">
             <argument type="service" id="annotation_reader" />
+            <argument type="service" id="service_container" />
             <argument>%vmelnik_doctrine_encrypt.encryptor_class_name%</argument>
             <argument>%vmelnik_doctrine_encrypt.secret_key%</argument>
             <tag name="doctrine.event_subscriber" />

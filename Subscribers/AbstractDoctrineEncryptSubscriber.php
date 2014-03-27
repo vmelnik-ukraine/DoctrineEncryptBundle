@@ -10,6 +10,7 @@ use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
 use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
 use \ReflectionProperty;
 use \Exception;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Doctrine event subscriber which encrypt/decrypt entities
@@ -25,6 +26,7 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * Encrypted annotation full name
      */
     const ENCRYPTED_ANN_NAME = 'VMelnik\DoctrineEncryptBundle\Configuration\Encrypted';
+    const CUSTOM_VALUE_HANDLER_EVENT = 'custom_encrypt_handler';
 
     /**
      * Encryptor
@@ -37,6 +39,12 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * @var Doctrine\Common\Annotations\Reader
      */
     protected $annReader;
+
+    /**
+     *
+     * @var ContainerInterface 
+     */
+    private $container;
 
     /**
      * Registr to avoid multi decode operations for one entity
@@ -52,8 +60,9 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
      * @param EncryptorServiceInterface|NULL $service (Optional)  An EncryptorServiceInterface.  
      * This allows for the use of dependency injection for the encrypters.
      */
-    public function __construct(Reader $annReader, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
+    public function __construct(Reader $annReader, ContainerInterface $container, $encryptorClass, $secretKey, EncryptorInterface $service = NULL) {
         $this->annReader = $annReader;
+        $this->container = $container;
         if ($service instanceof EncryptorInterface) {
             $this->encryptor = $service;
         } else {
@@ -127,9 +136,42 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
 
         if (!(($annotation->getDecrypt()) && ('encrypt' === $encryptorMethod))) {
             $refProperty->setAccessible(TRUE);
-            $refProperty->setValue($object, $this->encryptor->$encryptorMethod($refProperty->getValue($object), $annotation->getDeterministic()));
+            $refProperty->setValue($object, $this->determineNewValue($annotation, $refProperty->getValue($object), $object, $encryptorMethod));
         }
         return TRUE;
+    }
+
+    private function determineNewValue(Encrypted $annotation, $currentValue, $object, $encryptorMethod) {
+        //Check if there is a custom handler for the field.
+        $customMethod = $annotation->getHandlerMethod();
+        $customService = $annotation->getHandlerService();
+        if ((!NULL === $customService) && (!NULL === $customMethod)) {
+            $service = $this->getService($customService);
+            // Check that the method is valid.
+            if (!is_callable(array($service, $customMethod))) {
+                throw new Exception('Method "' . $customMethod . '" is not a callable method.');
+            }
+            return $service->$customMethod($this->encryptor, $currentValue, $encryptorMethod);
+        }
+        return $this->handleValue($encryptorMethod, $currentValue, $annotation->getDeterministic());
+    }
+
+    private function getService($customService) {
+        if ($this->container->has($customService)) {
+            return $this->container->get($customService);
+        }
+        throw new Exception('Unable to locate custom service "' . $customService . '".');
+    }
+
+    /**
+     * This method can be overridden to handle a specific data type differently.  
+     * IE.  Override this to handle arrays specifically with MongoDB.
+     * @param type $encryptorMethod
+     * @param type $value
+     * @param type $deterministic
+     */
+    protected function handleValue($encryptorMethod, $value, $deterministic) {
+        return $this->encryptor->$encryptorMethod($value, $deterministic);
     }
 
     /**

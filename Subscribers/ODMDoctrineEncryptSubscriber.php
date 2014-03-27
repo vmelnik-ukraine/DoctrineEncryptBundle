@@ -55,7 +55,6 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
         $document = $args->getDocument();
         $this->processFields($document);
         $om->getUnitOfWork()->recomputeSingleDocumentChangeSet($om->getClassMetadata(get_class($document)), $document);
-
     }
 
     /**
@@ -72,7 +71,25 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
             if ($this->processFields($document, false)) {
                 $this->addToDecodedRegistry($document, $args->getDocumentManager());
             }
-        }        
+        }
+    }
+
+    /**
+     * We override the standard implementation so we can deal with arrays.
+     * @param type $encryptorMethod
+     * @param type $value
+     * @param type $deterministic
+     * @return type
+     */
+    protected function handleValue($encryptorMethod, $value, $deterministic) {
+        if (is_array($value)) {
+            $new = array();
+            foreach ($value as $key => $subValue) {
+                $new[$key] = parent::handleValue($encryptorMethod, $subValue, $deterministic);
+            }
+            return $new;
+        }
+        return parent::handleValue($encryptorMethod, $value, $deterministic);
     }
 
 }
