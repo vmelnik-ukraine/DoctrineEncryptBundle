@@ -54,7 +54,9 @@ class ODMDoctrineEncryptSubscriber extends AbstractDoctrineEncryptSubscriber {
         $om = $args->getDocumentManager();
         $document = $args->getDocument();
         $this->processFields($document);
-        $om->getUnitOfWork()->recomputeSingleDocumentChangeSet($om->getClassMetadata(get_class($document)), $document);
+        if (!$om->getUnitOfWork()->isScheduledForDelete($document)) {
+            $om->getUnitOfWork()->recomputeSingleDocumentChangeSet($om->getClassMetadata(get_class($document)), $document);
+        }
     }
 
     /**
