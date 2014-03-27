@@ -7,6 +7,7 @@
     "require": {
         "php": ">=5.3.2",
         "symfony/framework-bundle": ">=2.0",
+        "tdm/doctrine-event-priority": "dev-master",
         "ext-mcrypt": "*"
     },
     "autoload": {
