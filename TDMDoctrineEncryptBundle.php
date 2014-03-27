@@ -1,15 +1,15 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle;
+namespace TDM\DoctrineEncryptBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
-use VMelnik\DoctrineEncryptBundle\DependencyInjection\VMelnikDoctrineEncryptExtension;
-use VMelnik\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
+use TDM\DoctrineEncryptBundle\DependencyInjection\TDMDoctrineEncryptExtension;
+use TDM\DoctrineEncryptBundle\DependencyInjection\Compiler\RegisterServiceCompilerPass;
 
 
-class VMelnikDoctrineEncryptBundle extends Bundle {
+class TDMDoctrineEncryptBundle extends Bundle {
     
     public function build(ContainerBuilder $container) {
         parent::build($container);
@@ -18,6 +18,6 @@ class VMelnikDoctrineEncryptBundle extends Bundle {
     
     public function getContainerExtension()
     {
-        return new VMelnikDoctrineEncryptExtension();
+        return new TDMDoctrineEncryptExtension();
     }
 }

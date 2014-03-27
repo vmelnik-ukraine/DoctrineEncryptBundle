@@ -1,5 +1,5 @@
 {
-    "name": "vmelnik/doctrine-encrypt-bundle",
+    "name": "tdm/doctrine-encrypt-bundle",
     "type": "library",
     "keywords": ["doctrine", "aes256", "encrypt", "decrypt"],
     "license": "MIT",
@@ -11,13 +11,17 @@
         "ext-mcrypt": "*"
     },
     "autoload": {
-        "psr-0": { "VMelnik\\DoctrineEncryptBundle": "" }
+        "psr-0": { "TDM\\DoctrineEncryptBundle": "" }
     },
-    "target-dir": "VMelnik/DoctrineEncryptBundle",
+    "target-dir": "TDM/DoctrineEncryptBundle",
     "authors": [
         {
             "name": "Victor Melnik",
             "email": "melnikvictorl@gmail.com"
+        },
+        {
+            "name": "Westin Pigott",
+            "email": "westin.pigott@techdata.com"
         }
     ]
 }

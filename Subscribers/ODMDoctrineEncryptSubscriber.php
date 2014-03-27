@@ -1,9 +1,9 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\Subscribers;
+namespace TDM\DoctrineEncryptBundle\Subscribers;
 
-use VMelnik\DoctrineEncryptBundle\Subscribers\AbstractDoctrineEncryptSubscriber;
-use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
+use TDM\DoctrineEncryptBundle\Subscribers\AbstractDoctrineEncryptSubscriber;
+use TDM\DoctrineEncryptBundle\Configuration\Encrypted;
 use Doctrine\ODM\MongoDB\Events;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Event\PreUpdateEventArgs;

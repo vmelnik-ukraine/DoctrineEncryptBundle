@@ -1,6 +1,6 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\Encryptors;
+namespace TDM\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Encryptor interface for encryptors

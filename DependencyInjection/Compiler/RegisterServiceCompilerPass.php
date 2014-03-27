@@ -1,6 +1,6 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\DependencyInjection\Compiler;
+namespace TDM\DoctrineEncryptBundle\DependencyInjection\Compiler;
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,13 +17,13 @@ class RegisterServiceCompilerPass implements CompilerPassInterface {
 
     public function process(ContainerBuilder $container) {
 
-        if ($container->hasParameter('vmelnik_doctrine_encrypt.encryptor_service')) {
+        if ($container->hasParameter('tdm_doctrine_encrypt.encryptor_service')) {
             // Load some parameters
-            $secretKey = $container->getParameter('vmelnik_doctrine_encrypt.secret_key');
-            $encryptorServiceId = $container->getParameter('vmelnik_doctrine_encrypt.encryptor_service');
+            $secretKey = $container->getParameter('tdm_doctrine_encrypt.secret_key');
+            $encryptorServiceId = $container->getParameter('tdm_doctrine_encrypt.encryptor_service');
 
             // Get the definitions
-            $subscriberDefinition = $this->getDefinition($container, 'vmelnik_doctrine_encrypt.subscriber');
+            $subscriberDefinition = $this->getDefinition($container, 'tdm_doctrine_encrypt.subscriber');
             $encryptorDefinition = $this->getDefinition($container, $encryptorServiceId);
 
             // Adjust the definitions

@@ -1,6 +1,6 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\Configuration;
+namespace TDM\DoctrineEncryptBundle\Configuration;
 
 use Doctrine\Common\Annotations\Annotation;
 

@@ -6,13 +6,13 @@
         
     <services>
         <!-- Encryption service(subscriber) for encrypt/decrypt entities properties -->    
-        <service id="vmelnik_doctrine_encrypt.orm_subscriber" class="VMelnik\DoctrineEncryptBundle\Subscribers\ORMDoctrineEncryptSubscriber" public="false">
+        <service id="tdm_doctrine_encrypt.orm_subscriber" class="TDM\DoctrineEncryptBundle\Subscribers\ORMDoctrineEncryptSubscriber" public="false">
             <argument type="service" id="annotation_reader" />
             <argument type="service" id="service_container" />
-            <argument>%vmelnik_doctrine_encrypt.encryptor_class_name%</argument>
-            <argument>%vmelnik_doctrine_encrypt.secret_key%</argument>
+            <argument>%tdm_doctrine_encrypt.encryptor_class_name%</argument>
+            <argument>%tdm_doctrine_encrypt.secret_key%</argument>
             <tag name="doctrine.event_subscriber" />
         </service>
-        <service id="vmelnik_doctrine_encrypt.subscriber" alias="vmelnik_doctrine_encrypt.orm_subscriber" />
+        <service id="tdm_doctrine_encrypt.subscriber" alias="tdm_doctrine_encrypt.orm_subscriber" />
     </services>
 </container>

@@ -1,13 +1,13 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\Subscribers;
+namespace TDM\DoctrineEncryptBundle\Subscribers;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\ObjectManager;
 use \ReflectionClass;
-use VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
-use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
+use TDM\DoctrineEncryptBundle\Encryptors\EncryptorInterface;
+use TDM\DoctrineEncryptBundle\Configuration\Encrypted;
 use \ReflectionProperty;
 use \Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,12 +20,12 @@ abstract class AbstractDoctrineEncryptSubscriber implements EventSubscriber {
     /**
      * Encryptor interface namespace 
      */
-    const ENCRYPTOR_INTERFACE_NS = 'VMelnik\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
+    const ENCRYPTOR_INTERFACE_NS = 'TDM\DoctrineEncryptBundle\Encryptors\EncryptorInterface';
 
     /**
      * Encrypted annotation full name
      */
-    const ENCRYPTED_ANN_NAME = 'VMelnik\DoctrineEncryptBundle\Configuration\Encrypted';
+    const ENCRYPTED_ANN_NAME = 'TDM\DoctrineEncryptBundle\Configuration\Encrypted';
     const CUSTOM_VALUE_HANDLER_EVENT = 'custom_encrypt_handler';
 
     /**

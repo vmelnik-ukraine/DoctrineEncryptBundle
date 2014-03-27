@@ -1,6 +1,6 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\Encryptors;
+namespace TDM\DoctrineEncryptBundle\Encryptors;
 
 /**
  * Class for AES-256 Prefixed encryption

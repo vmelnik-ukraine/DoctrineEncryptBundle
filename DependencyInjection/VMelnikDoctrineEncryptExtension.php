@@ -1,6 +1,6 @@
 <?php
 
-namespace VMelnik\DoctrineEncryptBundle\DependencyInjection;
+namespace TDM\DoctrineEncryptBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
-class VMelnikDoctrineEncryptExtension extends Extension {
+class TDMDoctrineEncryptExtension extends Extension {
 
     /**
      * {@inheritDoc}
@@ -28,7 +28,7 @@ class VMelnikDoctrineEncryptExtension extends Extension {
             'orm' => 'orm-services',
             'odm' => 'odm-services',
             );
-        $supportedEncryptorClasses = array('aes256' => 'VMelnik\DoctrineEncryptBundle\Encryptors\AES256Encryptor');
+        $supportedEncryptorClasses = array('aes256' => 'TDM\DoctrineEncryptBundle\Encryptors\AES256Encryptor');
 
         if (empty($config['secret_key'])) {
             if ($container->hasParameter('secret')) {
@@ -44,11 +44,11 @@ class VMelnikDoctrineEncryptExtension extends Extension {
             $encryptorFullName = $supportedEncryptorClasses[$config['encryptor']];
         }
 
-        $container->setParameter('vmelnik_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
-        $container->setParameter('vmelnik_doctrine_encrypt.secret_key', $config['secret_key']);
+        $container->setParameter('tdm_doctrine_encrypt.encryptor_class_name', $encryptorFullName);
+        $container->setParameter('tdm_doctrine_encrypt.secret_key', $config['secret_key']);
 
         if (!empty($config['encryptor_service'])) {
-            $container->setParameter('vmelnik_doctrine_encrypt.encryptor_service', $config['encryptor_service']);
+            $container->setParameter('tdm_doctrine_encrypt.encryptor_service', $config['encryptor_service']);
         }
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
@@ -71,7 +71,7 @@ class VMelnikDoctrineEncryptExtension extends Extension {
     }
 
     public function getAlias() {
-        return 'vmelnik_doctrine_encrypt';
+        return 'tdm_doctrine_encrypt';
     }
 
 }

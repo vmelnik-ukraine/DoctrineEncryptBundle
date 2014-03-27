@@ -5,6 +5,6 @@ on PHP side
 
 The following documents are available:
 
-* [Configuration reference](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/configuration_reference.md)
-* [Installation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/installation.md)
-* [Example of usage](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/example_of_usage.md)
+* [Configuration reference](configuration_reference.md)
+* [Installation](installation.md)
+* [Example of usage](example_of_usage.md)
