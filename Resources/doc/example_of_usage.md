@@ -26,7 +26,7 @@ use VMelnik\DoctrineEncryptBundle\Configuration\Encrypted;
  * @ORM\Entity
  * @ORM\Table(name="user_v")
  */
-class UserV implements EncryptableInterface {
+class UserV {
     
     /**
      * @ORM\Id
