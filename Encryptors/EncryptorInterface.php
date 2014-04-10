@@ -15,12 +15,14 @@ interface EncryptorInterface {
     public function __construct($secretKey);
 
     /**
-     * Must accept data and return encrypted data 
+     * @param string $data Plain text to encrypt
+     * @return string Encrypted text
      */
     public function encrypt($data);
 
     /**
-     * Must accept data and return decrypted data 
+     * @param string $data Encrypted text
+     * @return string Plain text
      */
     public function decrypt($data);
 }

@@ -10,42 +10,49 @@ namespace VMelnik\DoctrineEncryptBundle\Encryptors;
 class AES256Encryptor implements EncryptorInterface {
 
     /**
-     * Secret key for aes algorythm
      * @var string
      */
     private $secretKey;
 
     /**
-     * Initialization of encryptor
-     * @param string $key 
+     * @var string
+     */
+    private $initializationVector;
+
+    /**
+     * {@inheritdoc}
      */
     public function __construct($key) {
-        $this->secretKey = $key;
+        $this->secretKey = md5($key);
+        $this->initializationVector = mcrypt_create_iv(
+            mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB),
+            MCRYPT_RAND
+        );
     }
 
     /**
-     * Implementation of EncryptorInterface encrypt method
-     * @param string $data
-     * @return string
+     * {@inheritdoc}
      */
     public function encrypt($data) {
         return trim(base64_encode(mcrypt_encrypt(
-                                        MCRYPT_RIJNDAEL_256, $this->secretKey, $data, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND
-                                        ))));
+            MCRYPT_RIJNDAEL_256,
+            $this->secretKey,
+            $data,
+            MCRYPT_MODE_ECB,
+            $this->initializationVector
+        )));
     }
 
     /**
-     * Implementation of EncryptorInterface decrypt method
-     * @param string $data
-     * @return string 
+     * {@inheritdoc}
      */
     function decrypt($data) {
         return trim(mcrypt_decrypt(
-                                MCRYPT_RIJNDAEL_256, $this->secretKey, base64_decode($data), MCRYPT_MODE_ECB, mcrypt_create_iv(
-                                        mcrypt_get_iv_size(
-                                                MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB
-                                        ), MCRYPT_RAND
-                                )));
+            MCRYPT_RIJNDAEL_256,
+            $this->secretKey,
+            base64_decode($data),
+            MCRYPT_MODE_ECB,
+            $this->initializationVector
+        ));
     }
-
 }
