@@ -3,10 +3,14 @@
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
-        
+
+    <parameters>
+        <parameter key="vmelnik_doctrine_encrypt.orm_subscriber.class">VMelnik\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber</parameter>
+    </parameters>
+
     <services>
         <!-- Encryption service(subscriber) for encrypt/decrypt entities properties -->    
-        <service id="vmelnik_doctrine_encrypt.orm_subscriber" class="VMelnik\DoctrineEncryptBundle\Subscribers\DoctrineEncryptSubscriber" public="false">
+        <service id="vmelnik_doctrine_encrypt.orm_subscriber" class="%vmelnik_doctrine_encrypt.orm_subscriber.class%" public="false">
             <argument type="service" id="annotation_reader" />
             <argument>%vmelnik_doctrine_encrypt.encryptor_class_name%</argument>
             <argument>%vmelnik_doctrine_encrypt.secret_key%</argument>
