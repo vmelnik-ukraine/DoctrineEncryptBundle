@@ -1,5 +1,5 @@
 {
-    "name": "vmelnik/doctrine-encrypt-bundle",
+    "name": "jcharrel/doctrine-encrypt-bundle",
     "type": "library",
     "keywords": ["doctrine", "aes256", "encrypt", "decrypt"],
     "license": "MIT",
@@ -10,9 +10,9 @@
         "ext-mcrypt": "*"
     },
     "autoload": {
-        "psr-0": { "VMelnik\\DoctrineEncryptBundle": "" }
+        "psr-0": { "JCharrel\\DoctrineEncryptBundle": "" }
     },
-    "target-dir": "VMelnik/DoctrineEncryptBundle",
+    "target-dir": "JCharrel/DoctrineEncryptBundle",
     "authors": [
         {
             "name": "Victor Melnik",
