@@ -23,44 +23,46 @@ class EncryptExistingCommand extends ContainerAwareCommand
         $this
             ->setName('encrypt:existing')
             ->setDescription('Encrypt the existing data in the database - LOCK THE TABLE BEFORE THIS - Do not do this if you have already encrypted data - ONLY FOR AES256 ENCRYPTION')
-            ->addOption('entity', null, InputOption::VALUE_REQUIRED, 'The entity to encrypt in the DB - MyComp\\MyBundle\\MyEntity');
+            ->addOption('entity', null, InputOption::VALUE_REQUIRED, 'The entity to encrypt in the DB - MyComp\\MyBundle\\MyEntity')
+            ->addOption('em', null, InputOption::VALUE_OPTIONAL, 'Entity Manager you are using to manage this entity','default')
+            ->addOption('id_column', null, InputOption::VALUE_OPTIONAL, 'If your entity is not indexed by a column called "id"','id');
 
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $reflClass = new \ReflectionClass($input->getOption('entity'));
+        $em = $this->getContainer()->get('doctrine')->getManager($input->getOption('em'));
+        $em->getConnection()->getConfiguration()->setSQLLogger(null);
+        $metaInfo = $em->getClassMetadata($input->getOption('entity'));
         $propertiesToUpdate = array();
-        foreach ($reflClass->getProperties() AS $prop) {
+        foreach ($metaInfo->getReflectionProperties() AS $prop) {
             if(preg_match('/@Encrypted/', $prop->getDocComment()))
             {
-                $propertiesToUpdate[] = $prop;
+                $propertiesToUpdate[] = $metaInfo->getColumnName($prop->getName());
             }
         }
 
         $classname=$input->getOption('entity');
-        $em = $this->getContainer()->get('doctrine')->getManager();
+        
         $repository = $em->getRepository($classname);
-        $em->getConnection()->getConfiguration()->setSQLLogger(null);
+        
         $count=0;
     
-        $query = $em->createQuery('SELECT r.id FROM '.$classname.' r');
+        $query = $em->createQuery('SELECT r.'.$input->getOption('id_column').' FROM '.$classname.' r');
 
         $res = $query->getArrayResult();
 
         $encryptor = $this->getContainer()->get('vmelnik_doctrine_encrypt.subscriber');//new AES256Encryptor();
 
-        $manualEncryptor = new AES256Encryptor($this->getContainer()->getParameter('vmelnik_doctrine_encrypt.secret_key'));
-
         $sql = "SELECT ";
         $fields = array();
         
         foreach ($propertiesToUpdate as $prop) {
-            $fields[] = $prop->name;
+            $fields[] = $prop;
         }
         
         $sql .= implode(",", $fields);
-        $sql .= " FROM ".$em->getClassMetadata($classname)->getTableName()." WHERE id=";
+        $sql .= " FROM ".$em->getClassMetadata($classname)->getTableName()." WHERE ".$input->getOption('id_column')."=";
 
         $encryptor = new AES256Encryptor($this->getContainer()->getParameter('vmelnik_doctrine_encrypt.secret_key'));
 
@@ -68,8 +70,8 @@ class EncryptExistingCommand extends ContainerAwareCommand
         $i=0;
         foreach($res as $id)
         {
-            $output->writeln("<comment>Processing entity with ID: ".$id['id']."</comment>");
-            $currentQuery = $sql.$id['id'];
+            $output->writeln("<comment>Processing entity with ID: ".$id[$input->getOption('id_column')]."</comment>");
+            $currentQuery = $sql."'".$id[$input->getOption('id_column')]."'";
             $currentUpdate = $sql_update;
             $stmt = $em->getConnection()->prepare($currentQuery);
             $stmt->execute();
@@ -82,7 +84,7 @@ class EncryptExistingCommand extends ContainerAwareCommand
             }
 
             $currentUpdate .= implode(",", $newValues);
-            $currentUpdate .= " WHERE id=".$id['id'];
+            $currentUpdate .= " WHERE ".$input->getOption('id_column')."='".$id[$input->getOption('id_column')]."'";
             $stmt = $em->getConnection()->prepare($currentUpdate);
             $stmt->execute();
             $i++;
