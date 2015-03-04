@@ -75,7 +75,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * Listen a preUpdate lifecycle event. Checking and encrypt entities fields
      * which have @Encrypted annotation. Using changesets to avoid preUpdate event
      * restrictions
-     * @param LifecycleEventArgs $args 
+     * @param PreUpdateEventArgs $args 
      */
     public function preUpdate(PreUpdateEventArgs $args) {
         $reflectionClass = new ReflectionClass($args->getEntity());
