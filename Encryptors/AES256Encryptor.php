@@ -46,7 +46,7 @@ class AES256Encryptor implements EncryptorInterface {
     /**
      * {@inheritdoc}
      */
-    function decrypt($data) {
+    public function decrypt($data) {
         return trim(mcrypt_decrypt(
             MCRYPT_RIJNDAEL_256,
             $this->secretKey,
