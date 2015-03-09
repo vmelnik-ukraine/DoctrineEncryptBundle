@@ -39,7 +39,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     private $annReader;
 
     /**
-     * Registr to avoid multi decode operations for one entity
+     * Registry to avoid multi decode operations for one entity
      * @var array
      */
     private $decodedRegistry = array();
