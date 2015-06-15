@@ -68,7 +68,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     public function prePersist(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
-        $this->processFields($entity);
+
+        $metadata = $args->getEntityManager()->getMetadataFactory()->getMetadataFor(get_class($entity));
+        $this->processFields($entity,true,$metadata);
     }
 
     /**
@@ -79,9 +81,24 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     public function preUpdate(PreUpdateEventArgs $args) {
         $reflectionClass = new ReflectionClass($args->getEntity());
+        $metadata = $args->getEntityManager()->getMetadataFactory()->getMetadataFor(get_class($entity));
+        if($metadata !== null){
+            $fieldMappings = $metadata->fieldMappings;
+        }
         $properties = $reflectionClass->getProperties();
+
         foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+            //check annotations for encrypted flag
+            $encrypt = $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
+            $refPropertyName = $refProperty->getName();
+            //check metadata for encrypted type
+            if(array_key_exists($refPropertyName,$fieldMappings) && array_key_exists('type',$fieldMappings[$refPropertyName])){
+                if($fieldMappings[$refPropertyName]['type'] == 'encrypted'){
+                    $encrypt = true;
+                }
+            }
+
+            if ($encrypt) {
                 $propName = $refProperty->getName();
                 $args->setNewValue($propName, $this->encryptor->encrypt($args->getNewValue($propName)));
             }
@@ -132,13 +149,27 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param Obj $entity Some doctrine entity
      * @param Boolean $isEncryptOperation If true - encrypt, false - decrypt entity 
      */
-    private function processFields($entity, $isEncryptOperation = true) {
+    private function processFields($entity, $isEncryptOperation = true,$metadata=null) {
         $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
+        if($metadata !== null){
+            $fieldMappings = $metadata->fieldMappings;
+        }
         $reflectionClass = new ReflectionClass($entity);
+
         $properties = $reflectionClass->getProperties();
         $withAnnotation = false;
         foreach ($properties as $refProperty) {
-            if ($this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME)) {
+            //check annotations for encrypted flag
+            $encrypt = $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
+            $refPropertyName = $refProperty->getName();
+            //check metadata for encrypted type
+            if(array_key_exists($refPropertyName,$fieldMappings) && array_key_exists('type',$fieldMappings[$refPropertyName])){
+                if($fieldMappings[$refPropertyName]['type'] == 'encrypted'){
+                    $encrypt = true;
+                }
+            }
+
+            if ($encrypt) {
                 $withAnnotation = true;
                 // we have annotation and if it decrypt operation, we must avoid duble decryption
                 $propName = $refProperty->getName();
