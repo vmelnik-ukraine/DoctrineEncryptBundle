@@ -61,6 +61,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         }
     }
 
+
     /**
      * Listen a prePersist lifecycle event. Checking and encrypt entities
      * which have @Encrypted annotation
@@ -80,7 +81,8 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      * @param PreUpdateEventArgs $args 
      */
     public function preUpdate(PreUpdateEventArgs $args) {
-        $reflectionClass = new ReflectionClass($args->getEntity());
+        $entity = $args->getEntity();
+        $reflectionClass = new ReflectionClass($entity);
         $metadata = $args->getEntityManager()->getMetadataFactory()->getMetadataFor(get_class($entity));
         if($metadata !== null){
             $fieldMappings = $metadata->fieldMappings;
@@ -151,6 +153,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     private function processFields($entity, $isEncryptOperation = true,$metadata=null) {
         $encryptorMethod = $isEncryptOperation ? 'encrypt' : 'decrypt';
+        $fieldMappings =[];
         if($metadata !== null){
             $fieldMappings = $metadata->fieldMappings;
         }
