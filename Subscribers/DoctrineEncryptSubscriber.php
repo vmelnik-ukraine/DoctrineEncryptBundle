@@ -114,8 +114,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
      */
     public function postLoad(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
+        $metadata = $args->getEntityManager()->getMetadataFactory()->getMetadataFor(get_class($entity));
         if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
-            if ($this->processFields($entity, false)) {
+            if ($this->processFields($entity, false,$metadata)) {
                 $this->addToDecodedRegistry($entity, $args->getEntityManager());
             }
         }
@@ -166,10 +167,13 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             $encrypt = $this->annReader->getPropertyAnnotation($refProperty, self::ENCRYPTED_ANN_NAME);
             $refPropertyName = $refProperty->getName();
             //check metadata for encrypted type
-            if(array_key_exists($refPropertyName,$fieldMappings) && array_key_exists('type',$fieldMappings[$refPropertyName])){
-                if($fieldMappings[$refPropertyName]['type'] == 'encrypted'){
-                    $encrypt = true;
+            if(array_key_exists($refPropertyName,$fieldMappings)){
+                if(array_key_exists('type',$fieldMappings[$refPropertyName])){
+                    if($fieldMappings[$refPropertyName]['type'] == 'encrypted'){
+                        $encrypt = true;
+                    }
                 }
+
             }
 
             if ($encrypt) {
