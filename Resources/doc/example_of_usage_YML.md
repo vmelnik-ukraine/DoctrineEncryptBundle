@@ -6,7 +6,7 @@ Instead of using annotations you can do the following in your orm.yml mapping fi
 ```php
 //AppBundle/Resources/config/doctrine/YourEntity.orm.yml
 
-AppBundle\Entity\Account\Account:
+AppBundle\Entity\YourEntity:
     type: entity
     id:
         id:
