@@ -72,6 +72,17 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     }
 
     /**
+     * Listen a postPresist lifecycle event.
+     *
+     * @param LifecycleEventArgs $args LifecycleEventArgs
+     *
+     * @return void
+     */
+    public function postPersist(LifecycleEventArgs $args) {
+        $this->checkAndReloadEntities($args);
+    }
+
+    /**
      * Listen a preUpdate lifecycle event. Checking and encrypt entities fields
      * which have @Encrypted annotation. Using changesets to avoid preUpdate event
      * restrictions
@@ -87,13 +98,36 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
             }
         }
     }
+    /**
+     * Listen a postUpdate lifecycle event.
+     *
+     * @param LifecycleEventArgs $args LifecycleEventArgs
+     *
+     * @return void
+     */
+    public function postUpdate(LifecycleEventArgs $args) {
+        $this->checkAndReloadEntities($args);
+    }
 
     /**
-     * Listen a postLoad lifecycle event. Checking and decrypt entities
-     * which have @Encrypted annotations
-     * @param LifecycleEventArgs $args 
+     * Listen a postLoad lifecycle event.
+     *
+     * @param LifecycleEventArgs $args LifecycleEventArgs
+     *
+     * @return void
      */
     public function postLoad(LifecycleEventArgs $args) {
+        $this->checkAndReloadEntities($args);
+    }
+
+    /**
+     * Checking and decrypt entities which have @Encrypted annotations
+     *
+     * @param LifecycleEventArgs $args LifecycleEventArgs
+     *
+     * @return void
+     */
+    private function checkAndReloadEntities(LifecycleEventArgs $args) {
         $entity = $args->getEntity();
         if (!$this->hasInDecodedRegistry($entity, $args->getEntityManager())) {
             if ($this->processFields($entity, false)) {
@@ -109,7 +143,9 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
     public function getSubscribedEvents() {
         return array(
             Events::prePersist,
+            Events::postPersist,
             Events::preUpdate,
+            Events::postUpdate,
             Events::postLoad,
         );
     }
