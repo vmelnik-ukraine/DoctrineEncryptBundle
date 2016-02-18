@@ -186,7 +186,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         $metadata = $em->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
 
-        return isset($this->decodedRegistry[$className][$entity->$getter()]);
+        return isset($this->decodedRegistry[$className][(string) $entity->$getter()]);
     }
 
     /**
@@ -198,7 +198,7 @@ class DoctrineEncryptSubscriber implements EventSubscriber {
         $className = get_class($entity);
         $metadata = $em->getClassMetadata($className);
         $getter = 'get' . self::capitalize($metadata->getIdentifier());
-        $this->decodedRegistry[$className][$entity->$getter()] = true;
+        $this->decodedRegistry[$className][(string) $entity->$getter()] = true;
     }
 
 }
