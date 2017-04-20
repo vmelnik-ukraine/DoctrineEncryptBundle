@@ -3,11 +3,13 @@
 namespace VMelnik\DoctrineEncryptBundle\Encryptors;
 
 /**
- * Class for AES256 encryption
- * 
+ * Class for AES256 encryption.
+ *
  * @author Victor Melnik <melnikvictorl@gmail.com>
  */
-class AES256Encryptor implements EncryptorInterface {
+class AES256Encryptor implements EncryptorInterface
+{
+    const ENCRYPT_METHOD = 'aes-256-ecb';
 
     /**
      * @var string
@@ -22,37 +24,31 @@ class AES256Encryptor implements EncryptorInterface {
     /**
      * {@inheritdoc}
      */
-    public function __construct($key) {
+    public function __construct($key)
+    {
         $this->secretKey = md5($key);
-        $this->initializationVector = mcrypt_create_iv(
-            mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB),
-            MCRYPT_RAND
+        $this->initializationVector = openssl_random_pseudo_bytes(
+            openssl_cipher_iv_length(self::ENCRYPT_METHOD)
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function encrypt($data) {
-        return trim(base64_encode(mcrypt_encrypt(
-            MCRYPT_RIJNDAEL_256,
-            $this->secretKey,
-            $data,
-            MCRYPT_MODE_ECB,
-            $this->initializationVector
-        )));
+    public function encrypt($data)
+    {
+        return trim(base64_encode(
+            openssl_encrypt($data, self::ENCRYPT_METHOD, $this->secretKey, 0, $this->initializationVector))
+        );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function decrypt($data) {
-        return trim(mcrypt_decrypt(
-            MCRYPT_RIJNDAEL_256,
-            $this->secretKey,
-            base64_decode($data),
-            MCRYPT_MODE_ECB,
-            $this->initializationVector
-        ));
+    public function decrypt($data)
+    {
+        return trim(
+            openssl_decrypt(base64_decode($data), self::ENCRYPT_METHOD, $this->secretKey, 0, $this->initializationVector)
+        );
     }
 }
