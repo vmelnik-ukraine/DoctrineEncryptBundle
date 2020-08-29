@@ -1,18 +1,11 @@
-#DoctrineEncryptBundle
+# DoctrineEncryptBundle
+The DoctrineEncryptBundle allows you to create encrypted fields in doctrine entities making use of doctrine life cycle events.
 
-Bundle allows to create doctrine entities with fields that will be protected with 
-help of some encryption algorithm in database and it will be clearly for developer, because bundle is uses doctrine life cycle events
+## Documentation
+Read the [Documentation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/index.md), which is located at `Resources/doc/index.md`.
 
-###Documentation
+## License
+This bundle is developed under the MIT license. Find the complete license in this bundle.
 
-The bulk of the documentation is stored in the `Resources/doc/index.md` file in this bundle
-
-[Read the Documentation](https://github.com/vmelnik-ukraine/DoctrineEncryptBundle/blob/master/Resources/doc/index.md)
-
-###License
-
-This bundle is under the MIT license. See the complete license in the bundle
-
-###Versions
-
-I'm using Semantic Versioning like described [here](http://semver.org)
+## Versions
+I'm using semantic versioning. A description can be found [here](http://semver.org).
